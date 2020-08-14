@@ -100,21 +100,59 @@
 
 
 // creating a server
-const http = require('http');
-const server = http.createServer((req,res)=>{
-    if(req.url === '/'){
-        res.write("hello world");
-        res.end();
-    }
-    if(req.url === '/api/users'){
-        res.write(JSON.stringify([1, 2, 3]));
-        res.end();
-    }
-});
+// const http = require('http');
+// const server = http.createServer((req,res)=>{
+//     if(req.url === '/'){
+//         res.write("hello world");
+//         res.end();
+//     }
+//     if(req.url === '/api/users'){
+//         res.write(JSON.stringify([1, 2, 3]));
+//         res.end();
+//     }
+// });
 
 // server.on('connection', (socket)=>{
 //     console.log('new connection');
 // });
 
-server.listen(3000);
-console.log('listening to port 3000...')
+// server.listen(3000);
+// console.log('listening to port 3000...');
+
+// setTimeout(()=>{
+//     console.log("this will appear after five seconds...");
+// }, 5000);
+
+const http = require('http');
+const fs = require('fs');
+
+const server = http.createServer((req, res)=>{
+    // console.log(req.url);
+
+    res.setHeader('Content-Type', 'text/html');
+    
+    let path = './public';
+    switch(req.url){
+        case '/' : path+='/index.html';
+                   break;
+        case '/about' : path+='/about.html';
+                   break;
+        default : path+='/404.html';
+    }
+
+    fs.readFile(path, (err, data)=>{
+        if(err){
+            throw err;
+            res.end();
+        }else{
+            res.write(data);
+            res.end();
+        }
+    });
+});
+
+const port = process.env.port || 5000;
+
+server.listen(port,()=>{
+    console.log(`server started at port ${port}` );
+});
